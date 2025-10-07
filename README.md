@@ -1,1 +1,1 @@
-# CodeInsight LLM
+# CodeInsight
