@@ -1,7 +1,5 @@
 Datasets:
-1. https://huggingface.co/datasets/jtatman/python-code-dataset-500k
 2. http://huggingface.co/datasets/Vezora/Tested-143k-Python-Alpaca
-3. https://huggingface.co/datasets/glaiveai/glaive-code-assistant
 
 
 Model:
