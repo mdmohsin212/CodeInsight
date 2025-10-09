@@ -1,0 +1,15 @@
+model:
+  name : str
+  learning_rate : float
+  epochs : int
+  new_tuned_model: str
+
+dataset:
+  name : str
+
+lora:
+  r : int
+  lora_alpha : int
+  lora_dropout : float
+  bias : str
+  task_type : str

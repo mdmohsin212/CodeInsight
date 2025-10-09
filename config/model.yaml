@@ -1,0 +1,15 @@
+model:
+  name : "codellama/CodeLlama-7b-Instruct-hf"
+  learning_rate : 2e-5
+  epochs : 1
+  new_tuned_model: "mohsin416/CodeLlama-7b-Instruct-finetune"
+
+dataset:
+  name : "Vezora/Tested-143k-Python-Alpaca"
+
+lora:
+  r : 16
+  lora_alpha : 32
+  lora_dropout : 0.05
+  bias : "none"
+  task_type : "CAUSAL_LM"
