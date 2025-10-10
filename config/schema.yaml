@@ -11,5 +11,4 @@ lora:
   r : int
   lora_alpha : int
   lora_dropout : float
-  bias : str
-  task_type : str
+  target_modules : list[str]
