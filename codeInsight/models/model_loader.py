@@ -4,29 +4,32 @@ from codeInsight.logger import logging
 from codeInsight.exception import ExceptionHandle
 import sys
 
-def load_model(model_name : str, device : str = None):
+def load_model_and_tokenizer(config : dict) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     try:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        logging.info(f"Loading CLIP model {model_name} on {device}")
-        
+        model_id = config['base_model_id']
+        quant_config = config['quantization']
+        logging.info(f"Loading base model: {model_id}")
+
         bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16
-        )
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            quantization_config=bnb_config,
-            device_map=device,
-            trust_remote_code=True
+            load_in_4bit=quant_config['load_in_4bit'],
+            bnb_4bit_quant_type=quant_config['bnb_4bit_quant_type'],
+            bnb_4bit_compute_dtype=quant_config['bnb_4bit_compute_dtype'],
+            bnb_4bit_use_double_quant=quant_config['bnb_4bit_use_double_quant']
         )
         
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            quantization_config=bnb_config,
+            device_map="auto"
+        )
+        logging.info("Base model loaded successfully with 4-bit quantization.")
+        
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
         tokenizer.pad_token = tokenizer.eos_token
+        logging.info("Tokenizer loaded successfully.")
         
         return model, tokenizer
     
     except Exception as e:
-        logging.error(f"Error loading model {model_name}")
+        logging.error("Failed to load model or tokenizer")
         raise ExceptionHandle(e, sys)
