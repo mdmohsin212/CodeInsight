@@ -1,14 +1,59 @@
-model:
-  name : "codellama/CodeLlama-7b-Instruct-hf"
-  learning_rate : 2e-5
-  epochs : 1
-  new_tuned_model: "mohsin416/CodeLlama-7b-Instruct-finetune"
-
 dataset:
-  name : "Vezora/Tested-143k-Python-Alpaca"
+  name: "mohsin416/Python-Alpaca-5k"
+  shuffle_seed: 42
+  prompt_template : |
+    You are a senior Python developer. Provide clear, correct, well-commented code.
+
+    Instruction:
+    {instruction}
+
+    Output:
+    {output}
+
+model:
+  base_model_id: "codellama/CodeLlama-7b-Instruct-hf"
+
+  quantization:
+    load_in_4bit: True
+    bnb_4bit_quant_type: "nf4"
+    bnb_4bit_compute_dtype: "bfloat16"
+    bnb_4bit_use_double_quant: True
 
 lora:
-  r : 16
-  lora_alpha : 32
-  lora_dropout : 0.05
-  target_modules : ["q_proj", "v_proj"]
+  r: 32
+  load_alpha: 32
+  target_module: ["q_proj", "v_proj"]
+  lora_dropout: 0.1
+  bias: "None"
+  task_type: "CAUSAL_LM"
+
+paths:
+  output_dir: "artifacts/outputs"
+  adapter_save_dir: "artifacts/codellama7b-lora-adapter"
+  final_model_repo: "mohsin416/CodeLlama-7b-Instruct-LoRA"
+
+training:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 8
+  num_train_epochs: 3
+  learning_rate: 5.0e-5
+  warmup_ratio: 0.1
+  warmup_steps: 0
+  bf16: True
+  gradient_checkpointing: True
+  fp16: False
+  weight_decay: 0.01
+  logging_steps: 25
+  eval_steps: 200
+  save_steps: 200
+  eval_strategy: "steps"
+  save_strategy: "steps"
+  save_total_limit: 3
+  load_best_model_at_end: True
+  metric_for_best_model: "eval_loss"
+  greater_is_better: False
+  prediction_loss_only: True
+  report_to: "wandb"
+
+wandb:
+  project_name: "CodeLlama-7b-Instruct-finetune"
