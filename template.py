@@ -41,7 +41,6 @@ list_of_files = [
     ".gitignore",
     "README.md",
     "config/model.yaml",
-    "config/schema.yaml",
 ]
 
 for filepath in list_of_files:
