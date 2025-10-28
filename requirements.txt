@@ -5,7 +5,6 @@ accelerate
 evaluate
 sentencepiece
 trl
-torch
 wandb
 pyyaml
 streamlit
