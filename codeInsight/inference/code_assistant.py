@@ -1,7 +1,7 @@
 import torch
 import os
 import sys
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from codeInsight.utils.config import load_config
 from codeInsight.exception import ExceptionHandle
 from codeInsight.logger import logging
@@ -12,11 +12,20 @@ class CodeAssistant:
             self.config = load_config(config_path)
             model_repo = self.config['model']['final_model_repo']
             logging.info(f"Initializing CodeAssistant with model from: {model_repo}")
+                            
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True
+            )
             
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_repo,
+                quantization_config=bnb_config,
                 device_map="auto"
             )
+            
             self.tokenizer = AutoTokenizer.from_pretrained(
                 model_repo
             )
