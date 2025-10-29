@@ -20,7 +20,9 @@ def load_model_and_tokenizer(config : dict) -> tuple[AutoModelForCausalLM, AutoT
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
             quantization_config=bnb_config,
-            device_map="auto"
+            device_map="auto",
+            trust_remote_code=True,
+            attn_implementation=config['attn_implementation']
         )
         logging.info("Base model loaded successfully with 4-bit quantization.")
         

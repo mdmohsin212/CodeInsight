@@ -12,7 +12,8 @@ dataset:
 
 model:
   base_model_id: "codellama/CodeLlama-7b-Instruct-hf"
-
+  attn_implementation: "flash_attention_2"
+  
   quantization:
     load_in_4bit: True
     bnb_4bit_quant_type: "nf4"
@@ -22,10 +23,10 @@ model:
 lora:
   r: 32
   load_alpha: 32
-  target_module: ["q_proj", "v_proj"]
   lora_dropout: 0.1
   bias: "None"
   task_type: "CAUSAL_LM"
+  use_rslora: True
 
 paths:
   output_dir: "artifacts/outputs"

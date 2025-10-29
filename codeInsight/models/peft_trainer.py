@@ -17,6 +17,21 @@ class ModelTrainer:
         
         self.trainer = self._setup_trainer()
         logging.info("ModelTrainer initialized.")
+    
+    def _get_target_module(self, model) -> list:
+        try:
+            logging.info('Start Finding LoRA target module')
+            candidates = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+            present = set()
+            for name, module in model.named_modules():
+                for cand in candidates:
+                    if name.endswith(cand):
+                        present.add(cand)
+            return list(present) if present else ["q_proj", "v_proj"]
+        
+        except Exception as e:
+            logging.error(f"Something is wrong here")
+            raise ExceptionHandle(e, sys)
         
     def _peft_model_setup(self):
         try:
@@ -24,10 +39,11 @@ class ModelTrainer:
             lora_config = LoraConfig(
                 r=self.lora_config['r'],
                 lora_alpha=self.lora_config['lora_alpha'],
-                target_modules=self.lora_config['target_modules'],
+                target_modules=self._get_target_module(self.model),
                 lora_dropout=self.lora_config['lora_dropout'],
                 bias=self.lora_config['bias'],
-                task_type=self.lora_config['task_type']
+                task_type=self.lora_config['task_type'],
+                use_rslora=self.lora_config['use_rslora']
             )
             
             peft_model = get_peft_model(self.model, lora_config)
