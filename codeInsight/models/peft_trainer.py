@@ -1,16 +1,15 @@
 import sys
 from peft import get_peft_model, LoraConfig
-from transformers import TrainingArguments
 from trl import SFTTrainer, SFTConfig, DataCollatorForCompletionOnlyLM
+from transformers import EarlyStoppingCallback
 from codeInsight.logger import logging
 from codeInsight.exception import ExceptionHandle
 
 class ModelTrainer:
-    def __init__(self, model, tokenizer, datasets: dict, compute_metrics_fn, config: dict):
+    def __init__(self, model, tokenizer, datasets: dict, config: dict):
         self.model = model
         self.tokenizer = tokenizer
         self.datasets = datasets
-        self.compute_metrics_fn = compute_metrics_fn
         self.lora_config = config['lora']
         self.training_config = config['training']
         self.paths_config = config['paths']
@@ -98,6 +97,16 @@ class ModelTrainer:
             logging.error("Failed to create TrainingArguments")
             raise ExceptionHandle(e, sys)
     
+    def _data_collator(self):
+        try:
+            return DataCollatorForCompletionOnlyLM(
+                response_template="<|assistant|>",
+                tokenizer=self.tokenizer
+            )
+        except Exception as e:
+            logging.error("Failed to create Data Collator")
+            raise ExceptionHandle(e, sys)        
+    
     def _setup_trainer(self) -> SFTTrainer:
         logging.info("Initializing SFTTrainer")
         peft_model = self._peft_model_setup()
@@ -108,7 +117,8 @@ class ModelTrainer:
             train_dataset=self.datasets['train'],
             eval_dataset=self.datasets['val'],
             args=training_args,
-            compute_metrics=self.compute_metrics_fn
+            data_collator=self._data_collator(),
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=5, early_stopping_threshold=0.001)],
         )
         logging.info("SFTTrainer initialized successfully.")
         return trainer
