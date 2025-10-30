@@ -1,7 +1,7 @@
 import sys
 from peft import get_peft_model, LoraConfig
 from transformers import TrainingArguments
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig, DataCollatorForCompletionOnlyLM
 from codeInsight.logger import logging
 from codeInsight.exception import ExceptionHandle
 
@@ -56,19 +56,25 @@ class ModelTrainer:
             logging.error("Failed to setup PEFT model")
             raise ExceptionHandle(e, sys)
 
-    def _get_training_args(self) -> TrainingArguments:
+    def _get_training_args(self) -> SFTConfig:
         try:
-            return TrainingArguments(
+            return SFTConfig(
                 output_dir=self.paths_config['output_dir'],
                 per_device_train_batch_size=self.training_config['per_device_train_batch_size'],
+                per_device_eval_batch_siz=self.training_config['per_device_eval_batch_size'],
                 gradient_accumulation_steps=self.training_config['gradient_accumulation_steps'],
                 num_train_epochs=self.training_config['num_train_epochs'],
                 learning_rate=self.training_config['learning_rate'],
                 warmup_ratio=self.training_config['warmup_ratio'],
                 warmup_steps=self.training_config['warmup_steps'],
                 bf16=self.training_config['bf16'],
-                gradient_checkpointing=self.training_config['gradient_checkpointing'],
+                tf32=self.training_config['tf32'],
                 fp16=self.training_config['fp16'],
+                lr_scheduler_type=self.training_config['lr_scheduler_type'],
+                optim=self.training_config['optim'],
+                gradient_checkpointing=self.training_config['gradient_checkpointing'],
+                gradient_checkpointing_kwargs=self.training_config['gradient_checkpointing_kwargs'],
+                max_grad_norm=self.training_config['max_grad_norm'],
                 weight_decay=self.training_config['weight_decay'],
                 logging_steps=self.training_config['logging_steps'],
                 eval_steps=self.training_config['eval_steps'],
@@ -80,7 +86,12 @@ class ModelTrainer:
                 metric_for_best_model=self.training_config['metric_for_best_model'],
                 greater_is_better=self.training_config['greater_is_better'],
                 prediction_loss_only=self.training_config['prediction_loss_only'],
-                report_to=self.training_config['report_to']
+                report_to=self.training_config['report_to'],
+                dataloader_num_workers=self.training_config['dataloader_num_workers'],
+                max_seq_length=self.training_config['max_seq_length'],
+                dataset_text_field=self.training_config['dataset_text_field'],
+                label_names=self.training_config['label_names'],
+                neftune_noise_alpha=self.training_config['neftune_noise_alpha']
             )
             
         except Exception as e:

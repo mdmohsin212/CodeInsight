@@ -1,5 +1,6 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from peft import prepare_model_for_kbit_training
 from codeInsight.logger import logging
 from codeInsight.exception import ExceptionHandle
 import sys
@@ -24,10 +25,17 @@ def load_model_and_tokenizer(config : dict) -> tuple[AutoModelForCausalLM, AutoT
             trust_remote_code=True,
             attn_implementation=config['attn_implementation']
         )
+        
+        model.config.use_cache = False
+        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
+        model.gradient_checkpointing_enable()
+        
         logging.info("Base model loaded successfully with 4-bit quantization.")
         
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "right"
+        
         logging.info("Tokenizer loaded successfully.")
         
         return model, tokenizer
