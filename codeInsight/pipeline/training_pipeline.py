@@ -18,7 +18,7 @@ class TrainingPipeline:
         self.wandb_key = os.getenv('WANDB_API_KEY')
         self.gf_token = os.getenv('HF_TOKEN')
         
-    def _wandb_login(self):
+    def _wandb_login(self): 
         try:
             if self.wandb_key:
                 wandb.login(key=self.wandb_key)
@@ -45,8 +45,7 @@ class TrainingPipeline:
                 model=model,
                 tokenizer=tokenizer,
                 datasets=tokenized_datasets,
-                compute_metrics_fn=compute_metrics,
-                config=self.config
+                config=self.config,
             )
             
             trainer.train()
