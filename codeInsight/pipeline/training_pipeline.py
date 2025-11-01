@@ -39,7 +39,7 @@ class TrainingPipeline:
             model, tokenizer = load_model_and_tokenizer(self.config['model'])
             
             dataset_builder = DatasetBuilder(self.config, tokenizer)
-            tokenized_datasets = dataset_builder.get_tokenized_dataset()
+            tokenized_datasets = dataset_builder.get_dataset()
             
             trainer = ModelTrainer(
                 model=model,

@@ -1,14 +1,10 @@
 dataset:
   name: "mohsin416/Python-Alpaca-5k"
   shuffle_seed: 42
-  prompt_template : |
-    You are a senior Python developer. Provide clear, correct, well-commented code.
-
-    Instruction:
-    {instruction}
-
-    Output:
-    {output}
+  SYSTEM_PROMPT: "<|system|>\nYou are a senior Python developer. Provide clear, correct, well-commented code.<|end|>\n\n"
+  USER_TOKEN: "<|user|>\n"
+  ASSISTANT_TOKEN: "<|assistant|>\n"
+  END_TOKEN: "<|end|>"
 
 model:
   base_model_id: "microsoft/Phi-3-mini-128k-instruct"

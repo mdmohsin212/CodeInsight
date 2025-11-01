@@ -8,14 +8,15 @@ class DatasetBuilder:
     def __init__(self, config : dict, tokenizer):
         self.config = config['dataset']
         self.tokenizer = tokenizer
+        torch.manual_seed(self.config['shuffle_seed'])
         logging.info("DatasetBuilder initialized")
     
     def _format_example(self, example : dict) -> dict:
         try:
-            prompt_template = self.config['prompt_template']
-            text = prompt_template.format(
-                instruction=example['instruction'],
-                output=example['output']
+            text = (
+                f"{self.config['SYSTEM_PROMPT']}"
+                f"{self.config['USER_TOKEN']}{example['instruction']}{self.config['USER_TOKEN']}\n\n"
+                f"{self.config['ASSISTANT_TOKEN']}{example['output']}{self.config['USER_TOKEN']}"
             )
             return {"text" : text}
         
@@ -23,33 +24,20 @@ class DatasetBuilder:
             logging.error("Something is wrong in format_example")
             raise ExceptionHandle(e, sys)
     
-    def _tokenize_batch(self, batch : dict) -> dict:
-        return self.tokenizer(
-            batch['text'],
-            padding=True,
-            truncation=True,
-            return_tensors=None
-        )
-    
-    def get_tokenized_dataset(self) -> dict:
+    def get_dataset(self) -> dict:
         try:
             dataset_name = self.config['name']
             raw_data = load_dataset(dataset_name)
             logging.info(f"Load dataset: {dataset_name}")
             
-            tokenized_dataset = {}
-            
             for split in raw_data.keys():
-                formatted_data = raw_data[split].map(
-                    self._format_example,
-                    remove_columns=['instruction', 'output']
-                )
-                if split=="train":
-                    formatted_data = formatted_data.shuffle(seed=self.config['shuffle_seed'])
+                raw_data[split] = raw_data[split].map(self._format_example, num_proc=4)
+                raw_data[split] = raw_data[split].remove_columns(['instruction', 'output'])
                     
-                tokenized_dataset[split] = formatted_data
+            raw_data["train"] = raw_data["train"].shuffle(seed=self.config['shuffle_seed'])
+            
             logging.info("All datasets processed and tokenized.")
-            return tokenized_dataset
+            return raw_data
         
         except Exception as e:
             logging.error(f"Failed during dataset preparation: {e}")
