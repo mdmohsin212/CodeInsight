@@ -1,6 +1,7 @@
 transformers
 datasets
 peft
+torch
 accelerate
 evaluate
 sentencepiece
@@ -8,4 +9,3 @@ trl
 wandb
 pyyaml
 streamlit
--e
