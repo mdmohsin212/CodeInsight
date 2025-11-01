@@ -13,16 +13,8 @@ class CodeAssistant:
             model_repo = self.config['model']['final_model_repo']
             logging.info(f"Initializing CodeAssistant with model from: {model_repo}")
                             
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16,
-                bnb_4bit_use_double_quant=True
-            )
-            
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_repo,
-                quantization_config=bnb_config,
                 device_map="auto"
             )
             
@@ -59,7 +51,7 @@ class CodeAssistant:
                     max_new_tokens=max_new_token,
                     pad_token_id=self.tokenizer.eos_token_id,
                     do_sample=True,
-                    temperature=0.7,
+                    temperature=0.1,
                     top_p=0.9
                 )
             
