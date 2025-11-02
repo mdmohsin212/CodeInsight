@@ -6,6 +6,12 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /app/.cache \
     && chmod -R 777 /app/.cache
 
@@ -14,7 +20,8 @@ ENV TRANSFORMERS_CACHE=/app/.cache
 
 COPY . .
 
+EXPOSE 8501
 
-EXPOSE 10000
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
-CMD ["streamlit", "run", "app.py"]
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
