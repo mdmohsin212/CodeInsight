@@ -43,7 +43,10 @@ if pipeline:
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 response = pipeline.predict(prompt)
-                formatted_response = f"```python\n{response}\n```"
+                cleaned_response = response.replace(
+                    "You are a senior Python developer. Provide clear, correct, well-commented code.", ""
+                ).strip()
+                formatted_response = f"```python\n{cleaned_response}\n```"
                 st.markdown(formatted_response)
 
         st.session_state.messages.append({"role": "assistant", "content": formatted_response})
