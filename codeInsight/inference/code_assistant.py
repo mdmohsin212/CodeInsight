@@ -11,7 +11,7 @@ class CodeAssistant:
         try:
             self.config = load_config(config_path)
             self.dataset_config = self.config['dataset']
-            model_repo = self.config['model']['final_model_repo']
+            model_repo = self.config['paths']['final_model_repo']
             logging.info(f"Initializing CodeAssistant with model from: {model_repo}")
                             
             self.model = AutoModelForCausalLM.from_pretrained(
