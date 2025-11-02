@@ -21,3 +21,6 @@ logging.basicConfig(
     level=logging.DEBUG,
     handlers=[file_handler, console_handler],
 )
+
+for noisy_logger in ["watchdog", "watchdog.observer", "watchdog.observers"]:
+    logging.getLogger(noisy_logger).setLevel(logging.CRITICAL)
