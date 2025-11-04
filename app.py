@@ -21,11 +21,11 @@ def load_pipeline():
 pipeline = load_pipeline()
 
 st.title("🤖 CodeInsight Assistant")
-st.caption("Your fine-tuned CodeLlama-7b model, ready to help with Python.")
+st.caption("Your fine-tuned Phi-3-mini-128k-instruct model, ready to help with Python.")
 st.divider()
 
 st.markdown(
-    "Welcome! This assistant is powered by a **fine-tuned CodeLlama-7b model** "
+    "Welcome! This assistant is powered by a **fine-tuned Phi-3-mini-128k-instruct model** "
     "to help you with Python programming tasks. Ask it to generate code, "
     "explain concepts, or refactor snippets."
 )
@@ -35,7 +35,6 @@ with col1:
     st.subheader("🚀 What it can do")
     st.markdown("""
     * **Generate Code:** "Write a function to merge two dictionaries."
-    * **Explain Concepts:** "What is a Python decorator and how do I use one?"
     * **Refactor/Debug:** "Can you make this 'for' loop more efficient?"
     """)
 
@@ -43,7 +42,6 @@ with col2:
     st.subheader("⚠️ Important Limitations")
     st.warning("""
     * The model may occasionally produce incorrect or inefficient code.
-    * Always review and test generated code.
     * Knowledge is limited to the model's training data.
     """)
 st.divider()
