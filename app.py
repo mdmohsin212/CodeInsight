@@ -21,7 +21,7 @@ def load_pipeline():
 pipeline = load_pipeline()
 
 st.title("🤖 CodeInsight Assistant")
-st.caption("Your fine-tuned Phi-3-mini-128k-instruct model, ready to help with Python.")
+st.caption("Fine-tuned Phi-3-mini-128k-instruct model, ready to help with Python.")
 st.divider()
 
 st.markdown(
