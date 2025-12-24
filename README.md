@@ -1,1 +1,1 @@
-# CodeInsight AI
+# CodeInsight
