@@ -1,1 +1,1 @@
-# Code Insight
+# CodeInsight
